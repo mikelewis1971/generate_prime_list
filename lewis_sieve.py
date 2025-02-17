@@ -1,4 +1,7 @@
-def lewis_sieve(n):
+def sieve_with_factors(n):
+    # Create a dictionary to hold factors
+    factors = {i: set() for i in range(2, n + 1)}
+    
     # Create a set of all numbers from 2 to n
     numbers = set(range(2, n + 1))
     
@@ -8,13 +11,20 @@ def lewis_sieve(n):
     # Iterate up to sqrt(n)
     for p in range(2, limit + 1):
         if p in numbers:  # If still in the set, it is prime
-            # Remove all multiples of p
-            numbers -= set(range(p * p, n + 1, p))
+            for multiple in range(p * p, n + 1, p):
+                numbers.discard(multiple)  # Remove multiple
+                factors[multiple].add(p)  # Add p to factors of the multiple
+                
+            factors[p].add(p)  # Add p to its own factors (since it's a prime)
     
-    return sorted(numbers)  # Return primes
+    # Add remaining prime numbers to their own factors
+    for prime in numbers:
+        factors[prime].add(prime)
+    
+    return sorted(numbers), factors  # Return primes and factors dictionary
 
-# Example Usage
-if __name__ == "__main__":
-    n = 100  # Change this to any upper limit
-    primes = lewis_sieve(n)
-    print("Primes from 2 to", n, ":", primes)
+# Example usage
+n = 30
+primes, prime_factors = sieve_with_factors(n)
+print("Primes:", primes)
+print("Prime Factors:", prime_factors)
